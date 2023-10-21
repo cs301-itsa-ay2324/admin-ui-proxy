@@ -9,9 +9,7 @@ export default function users(req: NextApiRequest, res: NextApiResponse) {
   const pointsAccountRows = pointsAccountData
   const userMap = new Map()
 
-  console.log(userRows)
   for (const row of userRows) {
-    console.log(row)
     const user: Users = {
       id: row.id,
       name: row.first_name + " " + row.last_name,
