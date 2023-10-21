@@ -1,32 +1,21 @@
-import fs from "fs"
-import path from "path"
 import { NextApiRequest, NextApiResponse } from "next"
 
+import { pointsAccountData } from "../../../config/points-accounts"
+import { usersData } from "../../../config/users"
+
 export default function users(req: NextApiRequest, res: NextApiResponse) {
-  const userDir = path.join("config", "users.csv")
-  const pointsAccountDir = path.join("config", "points_accounts.csv")
+  const userRows = usersData
 
-  const usersData = fs.readFileSync(userDir, "utf-8")
-  const pointsAccountData = fs.readFileSync(pointsAccountDir, "utf-8")
-  // Split the data into rows
-  const userRows = usersData.split("\n")
-  const pointsAccountRows = pointsAccountData.split("\n")
-  // create hashmap
+  const pointsAccountRows = pointsAccountData
   const userMap = new Map()
-  // fill map with user details
-  let isFirstUserLine = true
 
+  console.log(userRows)
   for (const row of userRows) {
-    if (isFirstUserLine) {
-      isFirstUserLine = false
-      continue
-    }
-
-    const values = row.split(",")
+    console.log(row)
     const user: Users = {
-      id: values[0],
-      name: values[2] + " " + values[3],
-      email: values[1],
+      id: row.id,
+      name: row.first_name + " " + row.last_name,
+      email: row.email,
       points_balance: 0,
       role: "",
     }
@@ -34,19 +23,11 @@ export default function users(req: NextApiRequest, res: NextApiResponse) {
     userMap.set(user.id, user)
   }
 
-  let isFirstPointLine = true
-
   for (const row of pointsAccountRows) {
-    if (isFirstPointLine) {
-      isFirstPointLine = false
-      continue
-    }
-
-    const values = row.split(",")
     const pointsAccount: PointsAccount = {
-      id: values[0],
-      user_id: values[1],
-      points_balance: parseInt(values[2]),
+      id: row.id,
+      user_id: row.user_id,
+      points_balance: row.balance,
     }
 
     // get user from map
