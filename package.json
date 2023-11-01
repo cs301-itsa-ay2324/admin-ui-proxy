@@ -10,7 +10,7 @@
     "test": "next build && node .next/standalone/server.js -p 3000 && wait-on http://localhost:3000 && cypress run",
     "test:e2e": "cypress run",
     "test:e2e:chrome": "cypress run -b chrome --headed",
-    "test:e2e:open": "cypress open"
+    "test:open": "cypress open"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
