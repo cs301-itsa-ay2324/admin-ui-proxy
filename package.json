@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "next build && node .next/standalone/server.js -p 3000 && wait-on http://localhost:3000 && cypress run",
+    "test": "yarn build && start-server-and-test start http://localhost:3000 \"cypress run\"",
     "test:e2e": "cypress run",
     "test:e2e:chrome": "cypress run -b chrome --headed",
     "test:open": "cypress open"
@@ -46,6 +46,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.1.0",
     "cypress": "^13.4.0",
     "prettier": "^3.0.2",
-    "prettier-plugin-tailwindcss": "^0.5.3"
+    "prettier-plugin-tailwindcss": "^0.5.3",
+    "start-server-and-test": "^2.0.1"
   }
 }
