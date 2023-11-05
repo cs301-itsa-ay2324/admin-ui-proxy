@@ -24,3 +24,10 @@ declare type Logs = {
   datetime: string
   device_info: string
 }
+
+declare type AuthUser = {
+    id: number,
+    email: string,
+    name: string,
+    role: string,
+}
