@@ -12,6 +12,7 @@ declare module "next-auth" {
     user?: User;
     clientId?: string;
     error?: string;
+    accessToken?: string;
   }
 }
 

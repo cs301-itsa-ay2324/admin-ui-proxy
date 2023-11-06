@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckIcon, ChevronDown } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -30,7 +31,7 @@ const UsersFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  role: z.string().optional(),
+  role: z.string(),
 })
 
 export function UsersForm({
@@ -42,12 +43,90 @@ export function UsersForm({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
   })
+  const { data: session } = useSession()
+  console.log(session)
+  console.log(session?.accessToken)
+  async function onSubmit(values: {
+    firstName: string
+    lastName: string
+    email: string
+    role: string
+  }) {
 
-  function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    // Do something with the form values.
-    // This will be type-safe and validated.
-    console.log(values)
+    // const body = {
+    //   userName: `${values.firstName.toLowerCase()}-${values.lastName.toLowerCase()}`,
+    //   profile: {
+    //     firstName: values.firstName,
+    //     lastName: values.lastName,
+    //   },
+    //   email: {
+    //     email: values.email,
+    //     isEmailVerified: true,
+    //   },
+    //   passwordChangeRequired: true,
+    //   requestPasswordlessRegistration: true,
+    // }
+    try {
+        const test = await fetch(
+        "https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/"+session?.user?.id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session?.accessToken}`,
+          },
+        }
+      )
+      const testData = await test.json()
+      console.log(testData)
+      
+    //   const createUserResponse = await fetch(
+    //     "https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/human/_import",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization": `Bearer ${session?.accessToken}`,
+    //       },
+    //       body: JSON.stringify(body),
+    //     }
+    //   )
+
+    //   if (!createUserResponse.ok) {
+    //     throw new Error(`HTTP error! status: ${createUserResponse.status}`)
+    //   }
+
+      // const userData = await createUserResponse.json()
+      // console.log("User created:", userData)
+
+      // const assignRoleBody = {
+      //   userId: userData.userId,
+      //   roles: [values.role],
+      // }
+
+      // const assignRoleResponse = await fetch(
+      //   `https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/projects/239478248294089381/grants/${userData.userId}/roles`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${session?.accessToken}`,
+      //     },
+      //     body: JSON.stringify(assignRoleBody),
+      //   }
+      // )
+
+      // if (!assignRoleResponse.ok) {
+      //   throw new Error(`HTTP error! status: ${assignRoleResponse.status}`)
+      // }
+
+      // const roleData = await assignRoleResponse.json()
+      // console.log("Role assigned:", roleData)
+    } catch (error) {
+      console.error("Error in user creation or role assignment:", error)
+    }
   }
+
   return (
     <Form {...form}>
       <form

@@ -85,6 +85,9 @@ export default NextAuth({
           email: token.user.email,
           role: token.user.role,
         }
+        if (typeof token.accessToken === 'string') {
+          session.accessToken = token.accessToken;
+        }
       }
       session.clientId = process.env.ZITADEL_CLIENT_ID
       return session
