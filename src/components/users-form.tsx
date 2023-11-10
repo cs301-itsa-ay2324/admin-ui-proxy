@@ -53,78 +53,70 @@ export function UsersForm({
     role: string
   }) {
 
-    // const body = {
-    //   userName: `${values.firstName.toLowerCase()}-${values.lastName.toLowerCase()}`,
-    //   profile: {
-    //     firstName: values.firstName,
-    //     lastName: values.lastName,
-    //   },
-    //   email: {
-    //     email: values.email,
-    //     isEmailVerified: true,
-    //   },
-    //   passwordChangeRequired: true,
-    //   requestPasswordlessRegistration: true,
-    // }
-    try {
-        const test = await fetch(
-        "https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/"+session?.user?.id,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${session?.accessToken}`,
-          },
-        }
-      )
-      const testData = await test.json()
-      console.log(testData)
-      
-    //   const createUserResponse = await fetch(
-    //     "https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/human/_import",
+    const body = {
+      userName: `${values.firstName.toLowerCase()}-${values.lastName.toLowerCase()}`,
+      profile: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+      },
+      email: {
+        email: values.email,
+        isEmailVerified: true,
+      },
+      passwordChangeRequired: true,
+      requestPasswordlessRegistration: true,
+    }
+    //try {
+    //     const test = await fetch(
+    //     "https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/"+session?.user?.id,
     //     {
-    //       method: "POST",
+    //       method: "GET",
     //       headers: {
     //         "Content-Type": "application/json",
     //         "Authorization": `Bearer ${session?.accessToken}`,
     //       },
-    //       body: JSON.stringify(body),
     //     }
     //   )
-
-    //   if (!createUserResponse.ok) {
-    //     throw new Error(`HTTP error! status: ${createUserResponse.status}`)
-    //   }
-
-      // const userData = await createUserResponse.json()
-      // console.log("User created:", userData)
-
-      // const assignRoleBody = {
-      //   userId: userData.userId,
-      //   roles: [values.role],
-      // }
-
-      // const assignRoleResponse = await fetch(
-      //   `https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/projects/239478248294089381/grants/${userData.userId}/roles`,
+    //   const testData = await test.json()
+    //   console.log(testData)
+      
+      // const createUserResponse = await fetch(
+      //   `https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/human/_import`,
       //   {
       //     method: "POST",
       //     headers: {
       //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${session?.accessToken}`,
+      //       "Authorization": `Bearer ${session?.accessToken}`,
       //     },
-      //     body: JSON.stringify(assignRoleBody),
+      //     body: JSON.stringify(body),
       //   }
       // )
 
-      // if (!assignRoleResponse.ok) {
-      //   throw new Error(`HTTP error! status: ${assignRoleResponse.status}`)
-      // }
+      fetch('/api/createUserInZitadel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      .then(response => {
+        if (response.headers.get('Content-Type')?.includes('application/json')) {
+          return response.json();
+        }
+        throw new Error('Non-JSON response received');
+      })
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+      
 
-      // const roleData = await assignRoleResponse.json()
-      // console.log("Role assigned:", roleData)
-    } catch (error) {
-      console.error("Error in user creation or role assignment:", error)
-    }
+    //   if (!createUserResponse.ok) {
+    //     throw new Error(`HTTP error! status: ${createUserResponse.status}`)
+    //   } else {
+    //     console.log(createUserResponse.json())
+    //   }
+    // } catch (error) {
+    //   console.error("Error in user creation or role assignment:", error)
+    // }
   }
 
   return (

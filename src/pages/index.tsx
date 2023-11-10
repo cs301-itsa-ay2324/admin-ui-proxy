@@ -23,6 +23,7 @@ export default function Home() {
   const { data: user, isValidating } = useSWR(`/api/userinfo`, (url) => loadData(url));
 
   const scope = 'urn:zitadel:iam:org:project:roles';
+  console.log(user)
   return (
     <Layout>
       <main
