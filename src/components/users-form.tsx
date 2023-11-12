@@ -44,15 +44,14 @@ export function UsersForm({
     defaultValues: { ...defaultValues },
   })
   const { data: session } = useSession()
-  console.log(session)
-  console.log(session?.accessToken)
+  // console.log(session)
+  // console.log(session?.accessToken)
   async function onSubmit(values: {
     firstName: string
     lastName: string
     email: string
     role: string
   }) {
-
     const body = {
       userName: `${values.firstName.toLowerCase()}-${values.lastName.toLowerCase()}`,
       profile: {
@@ -79,35 +78,36 @@ export function UsersForm({
     //   )
     //   const testData = await test.json()
     //   console.log(testData)
-      
-      // const createUserResponse = await fetch(
-      //   `https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/human/_import`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "Authorization": `Bearer ${session?.accessToken}`,
-      //     },
-      //     body: JSON.stringify(body),
-      //   }
-      // )
 
-      fetch('/api/createUserInZitadel', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      })
-      .then(response => {
-        if (response.headers.get('Content-Type')?.includes('application/json')) {
-          return response.json();
+    // const createUserResponse = await fetch(
+    //   `https://cs301g1t3-zsfvkc.zitadel.cloud/management/v1/users/human/_import`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "Authorization": `Bearer ${session?.accessToken}`,
+    //     },
+    //     body: JSON.stringify(body),
+    //   }
+    // )
+
+    fetch("/api/createUserInZitadel", {
+      method: "POST",
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        if (
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
+          return response.json()
         }
-        throw new Error('Non-JSON response received');
+        throw new Error("Non-JSON response received")
       })
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
-      
+      .then((data) => console.log(data))
+      .catch((error) => console.error("Error:", error))
 
     //   if (!createUserResponse.ok) {
     //     throw new Error(`HTTP error! status: ${createUserResponse.status}`)

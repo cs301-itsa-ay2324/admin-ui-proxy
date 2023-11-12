@@ -2,6 +2,7 @@ import NextAuth, { Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import ZitadelProvider from "next-auth/providers/zitadel"
 import { Issuer } from "openid-client"
+
 import { CustomToken } from "../../../../types/next-auth"
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
@@ -85,11 +86,12 @@ export default NextAuth({
           email: token.user.email,
           role: token.user.role,
         }
-        if (typeof token.accessToken === 'string') {
-          session.accessToken = token.accessToken;
+        if (typeof token.accessToken === "string") {
+          session.accessToken = token.accessToken
         }
       }
-      session.clientId = process.env.ZITADEL_CLIENT_ID
+      console.log("access token", session.accessToken)
+      // session.clientId = process.env.CLIENT_ID
       return session
     },
   },
