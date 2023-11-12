@@ -28,7 +28,7 @@ const UserData = () => {
         name: user.first_name + " " + user.last_name,
         email: user.email,
         points_balance: user.points_balance,
-        role: UserRole[user.role_id].toLowerCase(),
+        role: user.role_id == null ? "-" : UserRole[user.role_id].toLowerCase(),
       }
     })
     return userData
