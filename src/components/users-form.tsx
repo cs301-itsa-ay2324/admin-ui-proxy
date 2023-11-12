@@ -35,9 +35,12 @@ const UsersFormSchema = z.object({
 
 export function UsersForm({
   defaultValues,
+  id,
 }: {
   defaultValues?: z.infer<typeof UsersFormSchema>
+  id: string
 }) {
+  const isUpdate = defaultValues !== undefined && defaultValues !== null
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
@@ -45,9 +48,11 @@ export function UsersForm({
 
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
     console.log(values)
+    const method = isUpdate ? "PUT" : "POST"
+    const endpoint = isUpdate ? `/api/users/${id}` : "/api/users"
     // This will be type-safe and validated.
-    const response = await fetch("/api/users", {
-      method: "POST",
+    const response = await fetch(endpoint, {
+      method: method,
       body: JSON.stringify(values),
     })
     const res = await response.json()

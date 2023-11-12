@@ -34,7 +34,7 @@ const UserData = () => {
     return userData
   })
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <div>User Table Loading...</div>
   }
 
