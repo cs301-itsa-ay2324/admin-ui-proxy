@@ -21,7 +21,6 @@ const UserData = () => {
       throw new Error("Network response was not ok")
     }
     const data = await response.json()
-    console.log(data)
     const userData = data.map((user : any) => {
       return {
         id: user.id,
@@ -34,8 +33,10 @@ const UserData = () => {
     return userData
   })
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return <div>User Table Loading...</div>
+  } else if (data == undefined) {
+    return <div>No User Found in System</div>
   }
 
   return (

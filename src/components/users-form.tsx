@@ -23,6 +23,8 @@ import {
 } from "./form"
 import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import { useToast } from "@/components/use-toast"
+import { useRouter } from "next/router"
 
 const UsersFormSchema = z.object({
   first_name: z.string().min(1),
@@ -41,6 +43,8 @@ export function UsersForm({
   id: string
 }) {
   const isUpdate = defaultValues !== undefined && defaultValues !== null
+  const { toast } = useToast()
+  const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
@@ -57,6 +61,15 @@ export function UsersForm({
     const res = await response.json()
     if (res.error) {
       throw new Error(res.error)
+    } else {
+      toast({
+        title: "Success",
+        description: `User ${isUpdate ? "updated" : "created"} successfully`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000);
     }
   }
   return (
