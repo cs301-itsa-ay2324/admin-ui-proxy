@@ -2,6 +2,7 @@ import { Inter } from "next/font/google"
 
 import Navbar from "./navbar"
 import Sidebar from "./sidebar"
+import {Toaster} from "./toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,6 +19,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="grow overflow-x-scroll">
           <div>{children}</div>
         </div>
+        <Toaster />
       </div>
     </main>
   )

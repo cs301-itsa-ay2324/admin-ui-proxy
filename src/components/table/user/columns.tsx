@@ -4,9 +4,10 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   PenSquare,
-  TrashIcon,
   UserCog,
 } from "lucide-react"
+
+import { DeleteUserDialog } from "@/components/delete-user-dialog"
 
 export const Columns: ColumnDef<Users>[] = [
   {
@@ -82,13 +83,7 @@ export const Columns: ColumnDef<Users>[] = [
             <PenSquare className="h-5 w-5 cursor-pointer " />
             Adjust Points
           </Link>
-          <div className="mr-2 flex items-center gap-2 rounded-lg border px-3 py-2 text-red-500">
-            <TrashIcon
-              onClick={() => navigator.clipboard.writeText(user.id)}
-              className="h-5 w-5 cursor-pointer"
-            />
-            Delete
-          </div>
+          <DeleteUserDialog id={user.id} />
         </div>
       )
     },

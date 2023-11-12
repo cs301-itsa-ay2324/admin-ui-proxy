@@ -1,18 +1,12 @@
 import React from "react"
 import { useRouter } from "next/router"
-import { QueryClient, QueryClientProvider, useQuery } from "react-query"
+import { useQuery } from "react-query"
 
 import { Layout } from "@/components/layout"
 import { PointBalanceForm } from "@/components/pointbalance-form"
 
 const EditPage = () => {
-  const queryClient = new QueryClient()
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Account />
-    </QueryClientProvider>
-  )
+  return <Account />
 }
 
 export default EditPage

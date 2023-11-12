@@ -23,10 +23,12 @@ import {
 } from "./form"
 import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import { useToast } from "@/components/use-toast"
+import { useRouter } from "next/router"
 
 const UsersFormSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -35,18 +37,40 @@ const UsersFormSchema = z.object({
 
 export function UsersForm({
   defaultValues,
+  id,
 }: {
   defaultValues?: z.infer<typeof UsersFormSchema>
+  id?: string
 }) {
+  const isUpdate = defaultValues !== undefined && defaultValues !== null
+  const { toast } = useToast()
+  const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
   })
 
-  function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    // Do something with the form values.
+  async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
+    const method = isUpdate ? "PUT" : "POST"
+    const endpoint = isUpdate ? `/api/users/${id}` : "/api/users"
     // This will be type-safe and validated.
-    console.log(values)
+    const response = await fetch(endpoint, {
+      method: method,
+      body: JSON.stringify(values),
+    })
+    const res = await response.json()
+    if (res.error) {
+      throw new Error(res.error)
+    } else {
+      toast({
+        title: "Success",
+        description: `User ${isUpdate ? "updated" : "created"} successfully`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000);
+    }
   }
   return (
     <Form {...form}>
@@ -56,7 +80,7 @@ export function UsersForm({
       >
         <FormField
           control={form.control}
-          name="firstName"
+          name="first_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>First Name</FormLabel>
@@ -69,7 +93,7 @@ export function UsersForm({
         />
         <FormField
           control={form.control}
-          name="lastName"
+          name="last_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Last Name</FormLabel>
