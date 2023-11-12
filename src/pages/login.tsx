@@ -1,6 +1,5 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import useSWR from 'swr';
 import logo from '../../public/ascenda-logo.svg';
 
 const loadData = (url: string) =>
@@ -18,10 +17,7 @@ export default function Profile() {
     const { data: session, status } = useSession();
 
     const loading = status === 'loading';
-  
-    const { data: user, isValidating } = useSWR(`/api/userinfo`, (url) => loadData(url));
 
-    // Update the provider ID to 'cognito', matching your NextAuth configuration
     const handleSignIn = () => signIn('cognito', { callbackUrl: 'http://localhost:3000/' });
 
     const companyName = 'Ascenda Loyalty';
@@ -43,7 +39,7 @@ export default function Profile() {
                         </button>
                     </>
                 )}
-                {(loading || isValidating) && <span>Loading...</span>}
+                {(loading) && <span>Loading...</span>}
             </div>
         </div>
     );

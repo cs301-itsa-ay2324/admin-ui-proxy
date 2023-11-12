@@ -43,11 +43,27 @@ export function UsersForm({
     defaultValues: { ...defaultValues },
   })
 
-  function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    // Do something with the form values.
-    // This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
+    try {
+      const response = await fetch("/api/createUserCognito", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      console.log(result.message) // Handle success
+    } catch (error) {
+      console.error("Error creating user:", error?.message) // Handle error
+    }
   }
+
   return (
     <Form {...form}>
       <form

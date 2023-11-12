@@ -10,7 +10,7 @@ export default NextAuth({
     })
   ],
   pages: {
-    signIn: '/login',  // path to the sign-in page
+    signIn: '/login',
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
