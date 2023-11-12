@@ -41,7 +41,6 @@ export default async function handler(
     }
     // Delete specific user
   } else if (req.method === "DELETE") {
-    console.log("DELETE")
     try {
       const { id } = req.query
       const response = await fetch(

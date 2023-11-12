@@ -1,18 +1,15 @@
 import React from "react"
-import { QueryClient, QueryClientProvider, useQuery } from "react-query"
+import UserRole from "@/../types/enums"
+import { useQuery } from "react-query"
 
 import { DataTable } from "../data-table"
 import { Columns } from "./columns"
-import UserRole from "@/../types/enums"
 
 const UserTable = () => {
-  const queryClient = new QueryClient()
-  return (
-    <QueryClientProvider client={queryClient}>
-      <UserData />
-    </QueryClientProvider>
-  )
+  return <UserData />
 }
+
+export default UserTable
 
 const UserData = () => {
   const { isLoading, data } = useQuery("data", async () => {
@@ -21,7 +18,7 @@ const UserData = () => {
       throw new Error("Network response was not ok")
     }
     const data = await response.json()
-    const userData = data.map((user : any) => {
+    const userData = data.map((user: any) => {
       return {
         id: user.id,
         name: user.first_name + " " + user.last_name,
@@ -45,5 +42,3 @@ const UserData = () => {
     </div>
   )
 }
-
-export default UserTable

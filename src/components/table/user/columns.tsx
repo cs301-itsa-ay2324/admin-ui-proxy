@@ -7,7 +7,7 @@ import {
   UserCog,
 } from "lucide-react"
 
-import { DeleteUserDialog } from "@/components/deleteUserDialog"
+import { DeleteUserDialog } from "@/components/delete-user-dialog"
 
 export const Columns: ColumnDef<Users>[] = [
   {
