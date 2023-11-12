@@ -9,7 +9,7 @@ export default async function handler(
     try {
       const response = await fetch(`${process.env.USER_SERVICE_URL}/api/users`)
       const data = await response.json()
-      return res.status(200).json(data["users"])
+      return res.status(response.status).json(data)
     } catch (error) {
       res.status(500).json({ message: error })
     }
