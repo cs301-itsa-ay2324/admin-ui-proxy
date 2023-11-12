@@ -40,7 +40,7 @@ export function UsersForm({
   id,
 }: {
   defaultValues?: z.infer<typeof UsersFormSchema>
-  id: string
+  id?: string
 }) {
   const isUpdate = defaultValues !== undefined && defaultValues !== null
   const { toast } = useToast()
