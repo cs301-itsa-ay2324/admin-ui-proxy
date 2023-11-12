@@ -25,8 +25,8 @@ import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 
 const UsersFormSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -43,10 +43,17 @@ export function UsersForm({
     defaultValues: { ...defaultValues },
   })
 
-  function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    // Do something with the form values.
-    // This will be type-safe and validated.
+  async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
     console.log(values)
+    // This will be type-safe and validated.
+    const response = await fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify(values),
+    })
+    const res = await response.json()
+    if (res.error) {
+      throw new Error(res.error)
+    }
   }
   return (
     <Form {...form}>
@@ -56,7 +63,7 @@ export function UsersForm({
       >
         <FormField
           control={form.control}
-          name="firstName"
+          name="first_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>First Name</FormLabel>
@@ -69,7 +76,7 @@ export function UsersForm({
         />
         <FormField
           control={form.control}
-          name="lastName"
+          name="last_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Last Name</FormLabel>
