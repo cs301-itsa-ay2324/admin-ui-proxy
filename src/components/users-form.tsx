@@ -47,7 +47,6 @@ export function UsersForm({
   })
 
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    console.log(values)
     const method = isUpdate ? "PUT" : "POST"
     const endpoint = isUpdate ? `/api/users/${id}` : "/api/users"
     // This will be type-safe and validated.
