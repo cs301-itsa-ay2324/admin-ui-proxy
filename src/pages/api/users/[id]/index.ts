@@ -7,9 +7,9 @@ export default async function handler(
   // Get specific user details
   if (req.method === "GET") {
     try {
-      const { UID } = req.query
+      const { id } = req.query
       const response = await fetch(
-        `${process.env.USER_SERVICE_URL}/api/users/${UID}`
+        `${process.env.USER_SERVICE_URL}/api/users/${id}`
       )
       return res.status(200).json(response)
     } catch (error) {
