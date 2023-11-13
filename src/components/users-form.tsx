@@ -48,30 +48,10 @@ export function UsersForm({
   const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
-    defaultValues: { ...defaultValues },
+    defaultValues: isUpdate
+      ? { ...defaultValues }
+      : { first_name: "", last_name: "", email: "" },
   })
-
-  // CREATING USER IN COGNITO
-  // async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-  //   try {
-  //     const response = await fetch("/api/createUserCognito", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(values),
-  //     })
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! Status: ${response.status}`)
-  //     }
-
-  //     const result = await response.json()
-  //     console.log(result.message) // Handle success
-  //   } catch (error) {
-  //     console.error("Error creating user:", error?.message) // Handle error
-  //   }
-  // }
 
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
     const method = isUpdate ? "PUT" : "POST"
