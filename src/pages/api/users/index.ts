@@ -34,6 +34,7 @@ export default async function handler(
           { Name: "family_name", Value: last_name },
         ],
       }
+      // TODO: Check if user already exists in db
 
       // Create a new user in the database
       const response = await fetch(

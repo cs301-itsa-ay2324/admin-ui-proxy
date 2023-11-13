@@ -1,3 +1,4 @@
+import { deleteAppClientCache } from "next/dist/server/lib/render-server"
 import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckIcon, ChevronDown } from "lucide-react"
@@ -62,6 +63,27 @@ export function UsersForm({
       body: JSON.stringify(values),
     })
     const res = await response.json()
+    if (isUpdate && defaultValues.role === "-" && values.role !== undefined) {
+      // add user to cognito
+      const cognitoResponse = await fetch(`/api/users/cognito`, {
+        method: "POST",
+        body: JSON.stringify(values),
+      })
+      await cognitoResponse.json()
+      console.log("user added to cognito")
+      // update user role in db
+      const dbResponse = await fetch(`/api/users/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          role: values.role,
+        }),
+      })
+      await dbResponse.json()
+      console.log("user role updated in db")
+
+      await Promise.all([dbResponse, cognitoResponse])
+    }
+
     console.log(response)
     if (response.status !== 200) {
       toast({
