@@ -13,22 +13,55 @@ export default AccessControlTable
 
 const AccessControlData = () => {
   const { isLoading, data } = useQuery("data", async () => {
-    let userData = []
-    const response = await fetch("/api/users")
+    const response = await fetch("/api/users/roles")
+
+    function formatPermissionName(permissionType: string): string {
+      return permissionType
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    function getServicePermissions(
+      permissions: Permissions[],
+      databaseName: string
+    ): string[] {
+      const servicePermissions: string[] = []
+      const relevantPermissions = permissions.find(
+        (p) => p.database_name === databaseName
+      )
+      if (relevantPermissions) {
+        Object.entries(relevantPermissions).forEach(([key, value]) => {
+          if (value === true && ["read_all", "read_non_admin", "create", "update", "delete"].includes(key)) {
+            servicePermissions.push(formatPermissionName(key));
+          }
+        });
+      }
+      return servicePermissions
+    }
+
     if (response.ok) {
       const data = await response.json()
-      userData = data.users.map((user: any) => {
+      const roleData: RolesPermissions[] = data.roles.map((role : Roles) => {
         return {
-          id: user.id,
-          name: user.first_name + " " + user.last_name,
-          email: user.email,
-          points_balance: user.points_balance,
-          role:
-            user.role_id == null ? "-" : UserRole[user.role_id].toLowerCase(),
+          id: role.id,
+          name: role.name.toLowerCase(),
+          users_service_permissions: getServicePermissions(
+            role.permissions,
+            "USER"
+          ),
+          points_service_permissions: getServicePermissions(
+            role.permissions,
+            "POINTS"
+          ),
+          logs_service_permissions: getServicePermissions(
+            role.permissions,
+            "LOGS"
+          ),
         }
       })
+      return roleData
     }
-    return userData
   })
 
   if (isLoading) {
@@ -37,7 +70,7 @@ const AccessControlData = () => {
 
   return (
     <div>
-      <DataTable columns={Columns} data={data} />
+      <DataTable columns={Columns} data={data || []} />
     </div>
   )
 }

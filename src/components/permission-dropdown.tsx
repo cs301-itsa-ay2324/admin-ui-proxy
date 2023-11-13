@@ -30,6 +30,7 @@ function PermissionsDropdown<TFieldValues extends FieldValues>({
   setValue,
   name,
 }: PermissionsDropdownProps<TFieldValues>) {
+  const normalizedValue = Array.isArray(value) ? value : value ? [value] : []
   return (
     <div className="flex flex-col">
       <Popover>
@@ -44,7 +45,9 @@ function PermissionsDropdown<TFieldValues extends FieldValues>({
                 (!value || value.length === 0) && "text-muted-foreground"
               )}
             >
-              {value && value.length > 0 ? value.join(", ") : `Select ${label}`}
+              {normalizedValue.length > 0
+                ? normalizedValue.join(", ")
+                : `Select ${label}`}
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </FormControl>
@@ -58,9 +61,12 @@ function PermissionsDropdown<TFieldValues extends FieldValues>({
                 <CommandItem
                   key={permission}
                   onSelect={() => {
-                    const newValue = value.includes(permission)
-                      ? value.filter((v) => v !== permission)
-                      : [...value, permission]
+                    const currentValueArray = Array.isArray(value)
+                      ? value
+                      : [value]
+                    const newValue = currentValueArray.includes(permission)
+                      ? currentValueArray.filter((v) => v !== permission)
+                      : [...currentValueArray, permission]
                     setValue(name as any, newValue as any, {
                       shouldValidate: true,
                     })

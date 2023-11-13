@@ -28,6 +28,10 @@ export const Columns: ColumnDef<RolesPermissions>[] = [
     },
   },
   {
+    accessorKey: "name",
+    header: "Role Name",
+  },
+  {
     accessorKey: "users_service_permissions",
     header: "Users Service",
   },
@@ -58,9 +62,15 @@ export const Columns: ColumnDef<RolesPermissions>[] = [
             className="flex items-center gap-2 rounded-lg border px-3 py-2 text-primary"
             href={{
               pathname: `/access-control/${id}/edit`,
-              query: {},
+              query: {
+                id,
+                role: role.name,
+                users_service: role.users_service_permissions,
+                points_service: role.points_service_permissions,
+                logs_service: role.logs_service_permissions,
+              }
             }}
-            as={`/users/${id}/edit`}
+            as={`/access-control/${id}/edit`}
           >
             <UserCog className="h-5 w-5 cursor-pointer " />
             Edit

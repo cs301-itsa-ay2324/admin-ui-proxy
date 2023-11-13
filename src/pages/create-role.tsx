@@ -8,7 +8,7 @@ const CreateRole = () => {
     <Layout>
       <div className="p-14">
         <div className="mb-10 text-center text-2xl font-medium">Create New Role</div>
-        <RolesForm />
+        <RolesForm status="create"/>
       </div>
     </Layout>
   )

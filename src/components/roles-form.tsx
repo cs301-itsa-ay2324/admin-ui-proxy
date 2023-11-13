@@ -18,11 +18,11 @@ import { Input } from "./input"
 import PermissionsDropdown from "./permission-dropdown"
 
 const permissions = [
-  "create",
-  "update",
-  "delete",
-  "read-all",
-  "read-admin",
+  "Create",
+  "Update",
+  "Delete",
+  "Read All",
+  "Read Non Admin",
 ] as const
 
 const RolesFormSchema = z.object({
@@ -35,11 +35,12 @@ const RolesFormSchema = z.object({
 export function RolesForm({
   defaultValues,
   id,
+  status,
 }: {
   defaultValues?: z.infer<typeof RolesFormSchema>
   id?: string
+  status: "create" | "update"
 }) {
-  const isUpdate = defaultValues !== undefined && defaultValues !== null
   const { toast } = useToast()
   const router = useRouter()
   const form = useForm<z.infer<typeof RolesFormSchema>>({
@@ -52,28 +53,64 @@ export function RolesForm({
     },
   })
 
+  function mapToFrontendPermissions(servicePermissions: string[]) {
+    const permissionsMap: any = {
+      create: false,
+      read_all: false,
+      read_non_admin: false,
+      update: false,
+      delete: false,
+    }
+    servicePermissions.forEach((permission) => {
+      const key = permission.replace(/-/g, "_").toLowerCase().replace(" ", "_")
+      if (key in permissionsMap) {
+        permissionsMap[key] = true
+      }
+    })
+    return permissionsMap
+  }
+
   async function onSubmit(values: z.infer<typeof RolesFormSchema>) {
     console.log(values)
-    // const method = isUpdate ? "PUT" : "POST"
-    // const endpoint = isUpdate ? `/api/users/${id}` : "/api/users"
-    // // This will be type-safe and validated.
-    // const response = await fetch(endpoint, {
-    //   method: method,
-    //   body: JSON.stringify(values),
-    // })
-    // const res = await response.json()
-    // if (res.error) {
-    //   throw new Error(res.error)
-    // } else {
-    //   toast({
-    //     title: "Success",
-    //     description: `User ${isUpdate ? "updated" : "created"} successfully`,
-    //     duration: 3000,
-    //   })
-    //   setTimeout(() => {
-    //     router.push("/users")
-    //   }, 2000);
-    // }
+    const method = status === "create" ? "POST" : "PUT"
+    const endpoint =
+      status === "create" ? "/api/users/roles" : `/api/users/roles/${id}`
+    const reqBody = {
+      name: values.role.toUpperCase(),
+      permissions: [
+        {
+          database_name: "USER",
+          ...mapToFrontendPermissions(values.users_service),
+        },
+        {
+          database_name: "POINTS",
+          ...mapToFrontendPermissions(values.points_service),
+        },
+        {
+          database_name: "LOGS",
+          ...mapToFrontendPermissions(values.logs_service),
+        },
+      ],
+    }
+    console.log(reqBody)
+    // This will be type-safe and validated.
+    const response = await fetch(endpoint, {
+      method: method,
+      body: JSON.stringify(reqBody),
+    })
+    const res = await response.json()
+    if (res.error) {
+      throw new Error(res.error)
+    } else if (res.id == id) {
+      toast({
+        title: "Success",
+        description: `Role ${status} successfully`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/access-control")
+      }, 2000)
+    }
   }
   return (
     <Form {...form}>
