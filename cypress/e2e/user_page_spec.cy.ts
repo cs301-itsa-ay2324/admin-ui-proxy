@@ -6,14 +6,12 @@ describe('Users page', () => {
     cy.url().should('include', '/users')
 
     //checks for table headers
-    cy.contains("Name")
     cy.contains("User ID")
+    cy.contains("Name")
     cy.contains("Email")
-    cy.contains("Points Balance").scrollIntoView()
-    cy.contains("Role").scrollIntoView()
-    cy.contains("Edit").scrollIntoView()
-    cy.contains("Adjust Points").scrollIntoView()
-    cy.contains("Delete").scrollIntoView()
+    cy.contains("Points Balance")
+    cy.contains("Role")
+    cy.contains("Actions").scrollIntoView()
 
     //Checks Add User Page
     cy.contains("New User").click()

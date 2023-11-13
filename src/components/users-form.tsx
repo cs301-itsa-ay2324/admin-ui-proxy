@@ -1,7 +1,10 @@
+import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckIcon, ChevronDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
+import { useToast } from "@/components/use-toast"
 
 import { roles } from "../../config/roles"
 import { cn } from "../../utils/cn"
@@ -25,8 +28,8 @@ import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 
 const UsersFormSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -35,35 +38,63 @@ const UsersFormSchema = z.object({
 
 export function UsersForm({
   defaultValues,
+  id,
 }: {
   defaultValues?: z.infer<typeof UsersFormSchema>
+  id?: string
 }) {
+  const isUpdate = defaultValues !== undefined && defaultValues !== null
+  const { toast } = useToast()
+  const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
   })
 
+  // CREATING USER IN COGNITO
+  // async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
+  //   try {
+  //     const response = await fetch("/api/createUserCognito", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(values),
+  //     })
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`)
+  //     }
+
+  //     const result = await response.json()
+  //     console.log(result.message) // Handle success
+  //   } catch (error) {
+  //     console.error("Error creating user:", error?.message) // Handle error
+  //   }
+  // }
+
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
-    try {
-      const response = await fetch("/api/createUserCognito", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+    const method = isUpdate ? "PUT" : "POST"
+    const endpoint = isUpdate ? `/api/users/${id}` : "/api/users"
+    // This will be type-safe and validated.
+    const response = await fetch(endpoint, {
+      method: method,
+      body: JSON.stringify(values),
+    })
+    const res = await response.json()
+    if (res.error) {
+      throw new Error(res.error)
+    } else {
+      toast({
+        title: "Success",
+        description: `User ${isUpdate ? "updated" : "created"} successfully`,
+        duration: 3000,
       })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      console.log(result.message) // Handle success
-    } catch (error) {
-      console.error("Error creating user:", error?.message) // Handle error
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
     }
   }
-
   return (
     <Form {...form}>
       <form
@@ -72,7 +103,7 @@ export function UsersForm({
       >
         <FormField
           control={form.control}
-          name="firstName"
+          name="first_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>First Name</FormLabel>
@@ -85,7 +116,7 @@ export function UsersForm({
         />
         <FormField
           control={form.control}
-          name="lastName"
+          name="last_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Last Name</FormLabel>

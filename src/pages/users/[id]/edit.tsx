@@ -18,9 +18,10 @@ const EditPage = () => {
           Edit User Details
         </div>
         <UsersForm
+          id={id as string}
           defaultValues={{
-            firstName: firstName,
-            lastName: lastName,
+            first_name: firstName,
+            last_name: lastName,
             email: email as string,
             role: role as string,
           }}
