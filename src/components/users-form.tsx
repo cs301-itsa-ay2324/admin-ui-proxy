@@ -86,6 +86,46 @@ export function UsersForm({
       }, 2000)
     }
   }
+  async function removeRole() {
+    // remove user from cognito
+    const cognitoResponse = await fetch(`/api/users/cognito`, {
+      method: "DELETE",
+      body: JSON.stringify({ username: defaultValues?.email }),
+    })
+    await cognitoResponse.json()
+
+    // update user role in db to null
+    const dbResponse = await fetch(`/api/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        role: null,
+      }),
+    })
+    await dbResponse.json()
+
+    await Promise.all([dbResponse, cognitoResponse])
+
+    if (dbResponse.status !== 200 || cognitoResponse.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: "Something went wrong when removing user role.",
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
+    } else {
+      toast({
+        title: "Success",
+        description: `User role removed successfully.`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
+    }
+  }
   return (
     <Form {...form}>
       <form
@@ -188,7 +228,12 @@ export function UsersForm({
             </FormItem>
           )}
         />
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-between">
+          {isUpdate && (
+            <Button variant={`outline`} onClick={removeRole}>
+              Remove role
+            </Button>
+          )}
           <Button type="submit">Submit</Button>
         </div>
       </form>

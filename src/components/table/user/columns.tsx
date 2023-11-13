@@ -9,27 +9,6 @@ import {
 
 import { DeleteUserDialog } from "@/components/delete-user-dialog"
 
-// DELETING USER FROM COGNITO
-// async function deleteUser(email: string) {
-//   try {
-//     const response = await fetch("/api/deleteUserCognito", {
-//       method: "DELETE",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ email }),
-//     })
-
-//     if (!response.ok) {
-//       throw new Error("Failed to delete user")
-//     }
-
-//     // Handle success (e.g., refresh data or show success message)
-//   } catch (error) {
-//     // Handle error (e.g., show error message)
-//   }
-// }
-
 export const Columns: ColumnDef<Users>[] = [
   {
     accessorKey: "id",
@@ -104,18 +83,7 @@ export const Columns: ColumnDef<Users>[] = [
             <PenSquare className="h-5 w-5 cursor-pointer " />
             Adjust Points
           </Link>
-          <DeleteUserDialog id={user.id} />
-          {/* <div className="mr-2 flex items-center gap-2 rounded-lg border px-3 py-2 text-red-500">
-          <TrashIcon
-            onClick={() => {
-              if (confirm(`Are you sure you want to delete user ${user.name}?`)) {
-                deleteUser(user.email);
-              }
-            }}
-            className="h-5 w-5 cursor-pointer"
-          />
-            Delete
-          </div> */}
+          <DeleteUserDialog id={user.id} email={user.email} role={user.role} />
         </div>
       )
     },

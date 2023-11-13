@@ -61,13 +61,12 @@ export default async function handler(
   }
 
   if (req.method === "DELETE") {
-    const { username } = req.body
     try {
+      const { username } = JSON.parse(req.body)
       const params = {
         UserPoolId: process.env.COGNITO_USER_POOL_ID!,
         Username: username,
       }
-
       await cognitoISP.adminDeleteUser(params).promise()
 
       res.status(200).json({ message: "User deleted successfully" })
