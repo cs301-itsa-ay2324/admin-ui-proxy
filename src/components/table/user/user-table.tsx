@@ -15,6 +15,7 @@ const UserData = () => {
   const { isLoading, data } = useQuery("data", async () => {
     let userData = []
     const response = await fetch("/api/users")
+
     if (response.ok) {
       const data = await response.json()
       userData = data.users.map((user: any) => {
