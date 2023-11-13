@@ -75,7 +75,7 @@ export const Columns: ColumnDef<RolesPermissions>[] = [
             <UserCog className="h-5 w-5 cursor-pointer " />
             Edit
           </Link>
-          <DeleteUserDialog id={id} />
+          <DeleteUserDialog id={id} action={"role"} />
         </div>
       )
     },

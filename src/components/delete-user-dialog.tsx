@@ -12,11 +12,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/alert-dialog"
 
-export function DeleteUserDialog(prop: { id: string }) {
+export function DeleteUserDialog(prop: { id: string, action?: string }) {
   async function deleteUser() {
-    console.log(prop.id)
     const id = prop.id
-    const response = await fetch(`/api/users/${id}`, {
+    const url = prop.action === "role" ? `/api/users/roles/${id}` : `/api/users/${id}`
+    const response = await fetch(url, {
       method: "DELETE",
     })
     const res = await response.json()
