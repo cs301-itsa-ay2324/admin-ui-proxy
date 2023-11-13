@@ -69,7 +69,7 @@ const AccessControlData = () => {
 
   return (
     <div>
-      <DataTable columns={Columns} data={data || []} />
+      <DataTable columns={Columns} data={data || []} subject="id"/>
     </div>
   )
 }

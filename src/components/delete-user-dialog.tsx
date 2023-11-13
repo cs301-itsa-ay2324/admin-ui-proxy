@@ -15,8 +15,8 @@ import {
 
 export function DeleteUserDialog(prop: {
   id: string
-  email: string
-  role: string
+  email?: string
+  role?: string
   action?: string
 }) {
   
