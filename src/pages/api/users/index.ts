@@ -52,18 +52,9 @@ export default async function handler(
           }),
         }
       )
-      console.log("User created on DB")
 
       // Create a new admin user in Cognito has role
       if (role !== undefined) {
-        // check if user already exists in Cognito
-        console.log("checking if user in Cognito...")
-        await cognitoISP.adminGetUser({
-          UserPoolId: process.env.COGNITO_USER_POOL_ID!,
-          Username: email,
-        })
-
-        console.log("User not in cognito, creating one...")
         const cognitoResponse = await cognitoISP
           .adminCreateUser(cognitoParams)
           .promise()

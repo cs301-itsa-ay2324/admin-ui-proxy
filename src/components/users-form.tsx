@@ -62,8 +62,19 @@ export function UsersForm({
       body: JSON.stringify(values),
     })
     const res = await response.json()
-    if (res.error) {
-      throw new Error(res.error)
+    console.log(response)
+    if (response.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: isUpdate
+          ? "Something went wrong when updated user."
+          : "User already exists!",
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
     } else {
       toast({
         title: "Success",
