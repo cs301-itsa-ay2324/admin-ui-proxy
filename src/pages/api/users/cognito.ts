@@ -1,5 +1,3 @@
-// THESE ENDPOINTS ARE NOT IN USED, BUT KEPT FOR FUTURE REFERENCE
-
 import { NextApiRequest, NextApiResponse } from "next"
 import { CognitoIdentityServiceProvider } from "aws-sdk"
 
@@ -10,8 +8,8 @@ export default async function handler(
   const cognitoISP = new CognitoIdentityServiceProvider({
     region: process.env.AWS_REGION,
   })
-  if (req.method === "GET") {
-    const { firstName, lastName, email } = req.body
+  if (req.method === "POST") {
+    const { first_name, last_name, email } = JSON.parse(req.body)
 
     const params = {
       DesiredDeliveryMediums: ["EMAIL"],
@@ -19,17 +17,17 @@ export default async function handler(
       Username: email,
       UserAttributes: [
         { Name: "email", Value: email },
-        { Name: "given_name", Value: firstName },
-        { Name: "family_name", Value: lastName },
+        { Name: "given_name", Value: first_name },
+        { Name: "family_name", Value: last_name },
       ],
     }
 
     try {
       await cognitoISP.adminCreateUser(params).promise()
-      res.status(200).json({ message: "User created successfully" })
+      return res.status(200).json({ message: "User created successfully" })
     } catch (error) {
       console.error("Error creating user:", error)
-      res.status(500).json({ error: "Error creating user" })
+      return res.status(500).json({ error: "Error creating user" })
     }
   }
 
@@ -61,13 +59,12 @@ export default async function handler(
   }
 
   if (req.method === "DELETE") {
-    const { username } = req.body
     try {
+      const { username } = JSON.parse(req.body)
       const params = {
         UserPoolId: process.env.COGNITO_USER_POOL_ID!,
         Username: username,
       }
-
       await cognitoISP.adminDeleteUser(params).promise()
 
       res.status(200).json({ message: "User deleted successfully" })

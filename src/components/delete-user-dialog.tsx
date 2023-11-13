@@ -12,17 +12,46 @@ import {
   AlertDialogTrigger,
 } from "@/components/alert-dialog"
 
-export function DeleteUserDialog(prop: { id: string }) {
+import { toast } from "./use-toast"
+
+export function DeleteUserDialog(prop: {
+  id: string
+  email: string
+  role: string
+}) {
   async function deleteUser() {
-    console.log(prop.id)
+    console.log(prop)
+    // deleting user from db
     const id = prop.id
-    const response = await fetch(`/api/users/${id}`, {
+    const dbResponse = await fetch(`/api/users/${id}`, {
       method: "DELETE",
     })
-    const res = await response.json()
-    if (res.error) {
-      throw new Error(res.error)
+    await dbResponse.json()
+
+    // deleting user from cognito
+    if (prop.role !== "-") {
+      const cognitoResponse = await fetch(`/api/users/cognito`, {
+        method: "DELETE",
+        body: JSON.stringify({ username: prop.email }),
+      })
+      await cognitoResponse.json()
+
+      await Promise.all([dbResponse, cognitoResponse])
+    }
+
+    if (dbResponse.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: "Something went wrong when removing user.",
+        duration: 3000,
+      })
     } else {
+      toast({
+        title: "Success",
+        description: `User removed successfully.`,
+        duration: 3000,
+      })
       window.location.reload()
     }
   }
