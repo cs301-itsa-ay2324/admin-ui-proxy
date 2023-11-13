@@ -1,12 +1,15 @@
 import React from "react"
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table"
 
 import {
@@ -19,6 +22,7 @@ import {
 } from "@/components/table/table"
 
 import { Button } from "../button"
+import { Input } from "../input"
 import {
   Select,
   SelectContent,
@@ -30,27 +34,50 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  subject: string
 }
 
 export function DataTable<TData, TValue>({
+  subject,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
   const table = useReactTable({
     data,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
     },
   })
 
   return (
-    <div>
+    <div className="space-y-2">
+      <Input
+        placeholder={`Search ${subject}...`}
+        value={(table.getColumn(subject)?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn(subject)?.setFilterValue(event.target.value)
+        }
+        className="max-w-full "
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

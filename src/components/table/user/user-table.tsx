@@ -37,7 +37,7 @@ const UserData = () => {
 
   return (
     <div>
-      <DataTable columns={Columns} data={data} />
+      <DataTable columns={Columns} data={data} subject="name" />
     </div>
   )
 }
