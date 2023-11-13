@@ -71,7 +71,6 @@ export function RolesForm({
   }
 
   async function onSubmit(values: z.infer<typeof RolesFormSchema>) {
-    console.log(values)
     const method = status === "create" ? "POST" : "PUT"
     const endpoint =
       status === "create" ? "/api/users/roles" : `/api/users/roles/${id}`
@@ -92,16 +91,16 @@ export function RolesForm({
         },
       ],
     }
-    console.log(reqBody)
     // This will be type-safe and validated.
     const response = await fetch(endpoint, {
       method: method,
       body: JSON.stringify(reqBody),
     })
     const res = await response.json()
+    console.log(res)
     if (res.error) {
       throw new Error(res.error)
-    } else if (res.id == id) {
+    } else if (res.id) {
       toast({
         title: "Success",
         description: `Role ${status} successfully`,

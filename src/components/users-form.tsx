@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckIcon, ChevronDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { roles } from "../../config/roles"
+import { useToast } from "@/components/use-toast"
+
 import { cn } from "../../utils/cn"
 import { Button } from "./button"
 import {
@@ -23,8 +26,6 @@ import {
 } from "./form"
 import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
-import { useToast } from "@/components/use-toast"
-import { useRouter } from "next/router"
 
 const UsersFormSchema = z.object({
   first_name: z.string().min(1),
@@ -43,11 +44,30 @@ export function UsersForm({
   id?: string
 }) {
   const isUpdate = defaultValues !== undefined && defaultValues !== null
+  const [roleData, setRoleData] = useState<any[]>([])
   const { toast } = useToast()
   const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
     defaultValues: { ...defaultValues },
+  })
+
+  async function populateRole() {
+    const response = await fetch("/api/users/roles")
+    const data = await response.json()
+    const roleData = data.roles.map((role: any) => {
+      return {
+        id: role.id,
+        name: role.name.toLowerCase(),
+      }
+    })
+    return roleData
+  }
+
+  useEffect(() => {
+    populateRole().then((data) => {
+      setRoleData(data)
+    })
   })
 
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
@@ -69,7 +89,7 @@ export function UsersForm({
       })
       setTimeout(() => {
         router.push("/users")
-      }, 2000);
+      }, 2000)
     }
   }
   return (
@@ -135,8 +155,9 @@ export function UsersForm({
                       )}
                     >
                       {field.value
-                        ? roles.find((role) => role.value === field.value)
-                            ?.label
+                        ? Object.values(roleData).find(
+                            (role) => role.name === field.value
+                          )?.name
                         : "Select Role"}
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -147,23 +168,23 @@ export function UsersForm({
                     <CommandInput placeholder="Search role..." />
                     <CommandEmpty>No role found.</CommandEmpty>
                     <CommandGroup>
-                      {roles.map((role) => (
+                      {Object.values(roleData).map((role) => (
                         <CommandItem
-                          value={role.label}
-                          key={role.value}
+                          value={role.name}
+                          key={role.name}
                           onSelect={() => {
-                            form.setValue("role", role.value)
+                            form.setValue("role", role.name)
                           }}
                         >
                           <CheckIcon
                             className={cn(
                               "mr-2 h-4 w-4",
-                              role.value === field.value
+                              role.name === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
                           />
-                          {role.label}
+                          {role.name}
                         </CommandItem>
                       ))}
                     </CommandGroup>

@@ -1,5 +1,4 @@
 import React from "react"
-import UserRole from "@/../types/enums"
 import { useQuery } from "react-query"
 
 import { DataTable } from "../data-table"
