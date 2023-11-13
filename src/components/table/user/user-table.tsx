@@ -26,6 +26,7 @@ const UserData = () => {
   const { isLoading, data } = useQuery("data", async () => {
     let userData : any = []
     const response = await fetch("/api/users")
+
     if (response.ok) {
       const data = await response.json()
       const roleData = await populateRole()
@@ -42,14 +43,13 @@ const UserData = () => {
     }
     return userData
   })
-
   if (isLoading) {
     return <div>User Table Loading...</div>
   }
 
   return (
     <div>
-      <DataTable columns={Columns} data={data} />
+      <DataTable columns={Columns} data={data} subject="name" />
     </div>
   )
 }

@@ -83,7 +83,7 @@ export const Columns: ColumnDef<Users>[] = [
             <PenSquare className="h-5 w-5 cursor-pointer " />
             Adjust Points
           </Link>
-          <DeleteUserDialog id={user.id} />
+          <DeleteUserDialog id={user.id} email={user.email} role={user.role} />
         </div>
       )
     },

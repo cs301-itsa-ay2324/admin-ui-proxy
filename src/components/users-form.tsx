@@ -49,7 +49,9 @@ export function UsersForm({
   const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
-    defaultValues: { ...defaultValues },
+    defaultValues: isUpdate
+      ? { ...defaultValues }
+      : { first_name: "", last_name: "", email: "" },
   })
 
   async function populateRole() {
@@ -79,12 +81,84 @@ export function UsersForm({
       body: JSON.stringify(values),
     })
     const res = await response.json()
-    if (res.error) {
-      throw new Error(res.error)
+    if (isUpdate && defaultValues.role === "-" && values.role !== undefined) {
+      // add user to cognito
+      const cognitoResponse = await fetch(`/api/users/cognito`, {
+        method: "POST",
+        body: JSON.stringify(values),
+      })
+      await cognitoResponse.json()
+      console.log("user added to cognito")
+      // update user role in db
+      const dbResponse = await fetch(`/api/users/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          role: values.role,
+        }),
+      })
+      await dbResponse.json()
+      console.log("user role updated in db")
+
+      await Promise.all([dbResponse, cognitoResponse])
+    }
+
+    console.log(response)
+    if (response.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: isUpdate
+          ? "Something went wrong when updated user."
+          : "User already exists!",
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
     } else {
       toast({
         title: "Success",
         description: `User ${isUpdate ? "updated" : "created"} successfully`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
+    }
+  }
+  async function removeRole() {
+    // remove user from cognito
+    const cognitoResponse = await fetch(`/api/users/cognito`, {
+      method: "DELETE",
+      body: JSON.stringify({ username: defaultValues?.email }),
+    })
+    await cognitoResponse.json()
+
+    // update user role in db to null
+    const dbResponse = await fetch(`/api/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        role: null,
+      }),
+    })
+    await dbResponse.json()
+
+    await Promise.all([dbResponse, cognitoResponse])
+
+    if (dbResponse.status !== 200 || cognitoResponse.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: "Something went wrong when removing user role.",
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
+    } else {
+      toast({
+        title: "Success",
+        description: `User role removed successfully.`,
         duration: 3000,
       })
       setTimeout(() => {
@@ -195,7 +269,12 @@ export function UsersForm({
             </FormItem>
           )}
         />
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-between">
+          {isUpdate && (
+            <Button variant={`outline`} onClick={removeRole}>
+              Remove role
+            </Button>
+          )}
           <Button type="submit">Submit</Button>
         </div>
       </form>

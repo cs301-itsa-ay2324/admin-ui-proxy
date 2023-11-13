@@ -7,7 +7,7 @@ import { Columns } from "./columns"
 const LogTable = () => {
   return (
     <div>
-      <DataTable columns={Columns} data={Logs} />
+      <DataTable columns={Columns} data={Logs} subject="id" />
     </div>
   )
 }
