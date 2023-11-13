@@ -1,7 +1,10 @@
+import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckIcon, ChevronDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
+import { useToast } from "@/components/use-toast"
 
 import { roles } from "../../config/roles"
 import { cn } from "../../utils/cn"
@@ -23,8 +26,6 @@ import {
 } from "./form"
 import { Input } from "./input"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
-import { useToast } from "@/components/use-toast"
-import { useRouter } from "next/router"
 
 const UsersFormSchema = z.object({
   first_name: z.string().min(1),
@@ -47,7 +48,9 @@ export function UsersForm({
   const router = useRouter()
   const form = useForm<z.infer<typeof UsersFormSchema>>({
     resolver: zodResolver(UsersFormSchema),
-    defaultValues: { ...defaultValues },
+    defaultValues: isUpdate
+      ? { ...defaultValues }
+      : { first_name: "", last_name: "", email: "" },
   })
 
   async function onSubmit(values: z.infer<typeof UsersFormSchema>) {
@@ -59,8 +62,19 @@ export function UsersForm({
       body: JSON.stringify(values),
     })
     const res = await response.json()
-    if (res.error) {
-      throw new Error(res.error)
+    console.log(response)
+    if (response.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: isUpdate
+          ? "Something went wrong when updated user."
+          : "User already exists!",
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
     } else {
       toast({
         title: "Success",
@@ -69,7 +83,7 @@ export function UsersForm({
       })
       setTimeout(() => {
         router.push("/users")
-      }, 2000);
+      }, 2000)
     }
   }
   return (

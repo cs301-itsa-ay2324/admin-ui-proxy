@@ -15,6 +15,7 @@ const UserData = () => {
   const { isLoading, data } = useQuery("data", async () => {
     let userData = []
     const response = await fetch("/api/users")
+
     if (response.ok) {
       const data = await response.json()
       userData = data.users.map((user: any) => {
@@ -37,7 +38,7 @@ const UserData = () => {
 
   return (
     <div>
-      <DataTable columns={Columns} data={data} />
+      <DataTable columns={Columns} data={data} subject="name" />
     </div>
   )
 }
