@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.status(405).end(); // Only allow POST requests
+    return res.status(405).end();
   }
 
   const cognitoISP = new CognitoIdentityServiceProvider({
@@ -13,21 +13,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { firstName, lastName, email } = req.body;
 
   const params = {
-    DesiredDeliveryMediums: [ "EMAIL" ],
     UserPoolId: process.env.COGNITO_USER_POOL_ID!,
-    Username: email,
+    Username: email, // Username is set to user email, assuming its immutable
     UserAttributes: [
-      { Name: 'email', Value: email },
-      { Name: 'given_name', Value: firstName },
-      { Name: 'family_name', Value: lastName }
+      {
+        Name: 'given_name',
+        Value: firstName,
+      },
+      {
+        Name: 'family_name', 
+        Value: lastName,
+      },
     ],
   };
 
   try {
-    await cognitoISP.adminCreateUser(params).promise();
-    res.status(200).json({ message: 'User created successfully' });
+    await cognitoISP.adminUpdateUserAttributes(params).promise();
+    res.status(200).json({ message: 'User updated successfully' });
   } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Error creating user' });
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
