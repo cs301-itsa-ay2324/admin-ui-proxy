@@ -38,9 +38,9 @@ export function DeleteUserDialog(prop: { id: string }) {
         <AlertDialogHeader>
           <AlertDialogTitle>Action Confirmation</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete the user with ID:{" "}
-            <span className="text-blue-500">{prop.id}</span>? This action cannot
-            be undone.
+            Are you sure you want to delete ID:{" "}
+            <span className="text-blue-500">{prop.id}</span>?{" "}
+            <div className="pt-2">This action cannot be undone.</div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

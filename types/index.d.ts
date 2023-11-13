@@ -24,3 +24,10 @@ declare type Logs = {
   datetime: string
   device_info: string
 }
+
+declare type RolesPermissions = {
+  id: string
+  users_service_permissions: Array<string>
+  points_service_permissions: Array<string>
+  logs_service_permissions: Array<string>
+}
