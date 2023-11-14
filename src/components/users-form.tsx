@@ -101,8 +101,6 @@ export function UsersForm({
 
       await Promise.all([dbResponse, cognitoResponse])
     }
-
-    console.log(response)
     if (response.status !== 200) {
       toast({
         variant: "destructive",
