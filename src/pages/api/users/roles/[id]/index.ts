@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
+import { sendToSQS } from "@/sqs"
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,6 +22,18 @@ export default async function handler(
           }),
         }
       )
+      if (response.status === 200) {
+        const queuePayload = {
+          action: "UPDATE",
+          target: "ROLE",
+          triggeredBy: "ADMIN",
+          data: {
+            id,
+            permissions,
+          },
+        }
+        sendToSQS(queuePayload, "POST")
+      }
       const data = await response.json()
       return res.status(200).json(data)
     } catch (error) {
@@ -39,6 +52,17 @@ export default async function handler(
           },
         }
       )
+      if (response.status === 200) {
+        const queuePayload = {
+          action: "DELETE",
+          target: "ROLE",
+          triggeredBy: "ADMIN",
+          data: {
+            id,
+          },
+        }
+        sendToSQS(queuePayload, "POST")
+      }
       return res.status(200).json(response)
     } catch (error) {
       res.status(500).json({ message: error })

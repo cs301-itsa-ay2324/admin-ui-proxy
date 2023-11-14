@@ -54,7 +54,6 @@ const UserData = () => {
     }
     return userData
   })
-  if (data) console.log(data)
   return (
     <div>
       {data && (

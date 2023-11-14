@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ChevronDownIcon, ChevronUpIcon, SearchIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
 export const Columns: ColumnDef<Logs>[] = [
   {
@@ -21,31 +21,23 @@ export const Columns: ColumnDef<Logs>[] = [
     },
   },
   {
-    accessorKey: "desc",
-    header: "Description",
+    accessorKey: "action",
+    header: "Action",
   },
   {
-    accessorKey: "datetime",
-    header: "Date",
+    accessorKey: "target",
+    header: "Target",
   },
   {
-    accessorKey: "device_info",
-    header: "Device Info",
+    accessorKey: "triggeredby",
+    header: "Triggered By",
   },
   {
-    id: "actions",
-    header: "Actions",
-    // Actions to be configured
-    cell: ({ row }) => {
-      const user = row.original
-      return (
-        <div className="flex justify-center">
-          <SearchIcon
-            onClick={() => navigator.clipboard.writeText(user.id)}
-            className="h-5 w-5 cursor-pointer text-blue-500"
-          />
-        </div>
-      )
-    },
+    accessorKey: "timestamp",
+    header: "Timestamp",
+  },
+  {
+    accessorKey: "data",
+    header: "Data",
   },
 ]

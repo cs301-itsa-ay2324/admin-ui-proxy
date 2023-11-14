@@ -20,9 +20,11 @@ declare type PointsAccount = {
 
 declare type Logs = {
   id: string
-  desc: string
-  datetime: string
-  device_info: string
+  timestamp: string
+  action: string
+  target: string
+  triggeredBy: string
+  data: string
 }
 
 declare interface Permissions {
