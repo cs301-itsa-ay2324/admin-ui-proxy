@@ -15,7 +15,7 @@ declare type Users = {
 declare type PointsAccount = {
   id: string
   user_id: string
-  points_balance: number
+  balance: string
 }
 
 declare type Logs = {
@@ -50,3 +50,8 @@ declare type RolesPermissions = {
 }
 
 declare type CRUD = ("Create" | "Update" | "Delete" | "Read All" | "Read Non Admin")
+
+declare type AccountBalance = {
+  id: string
+  balance: string
+}

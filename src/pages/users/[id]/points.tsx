@@ -13,34 +13,42 @@ export default EditPage
 
 const Account = () => {
   const router = useRouter()
-  const { name, balance } = router.query
-  const { data = {} } = useQuery("data", async () => {
-    const response = await fetch(`/api/accounts/${router.query.id}`)
-    const userAccount = await response.json()
-    return userAccount
-  })
-  /*
-  Note:
-  data.userAccounts is an array of account ids associated with this user id
-  data.userBalance is an array of account balances associated with this user id
-
-  Unsure of the shape of the data we want to pass to the form, as a user has multiple accounts with multiple balance,
-  perhaps the balance field should dynamically change depending on the account selected? but what should the default value be as well?
-  questions to ask in the future, for now we just get all the accounts associated with the user id and pass it to the form to display
-  */
+  const { id, name } = router.query
+  const { data = [] } = useQuery<AccountBalance[], Error>(
+    "userAccounts",
+    async () => {
+      try {
+        const response = await fetch(`/api/points/user/${id}`)
+        if (!response.ok) {
+          throw new Error("Failed to fetch user account")
+        }
+        const userAccount: PointsAccount[] = await response.json()
+        const accounts: AccountBalance[] = []
+        userAccount.forEach((account: PointsAccount) => {
+          accounts.push({
+            id: account.id,
+            balance: account.balance.toString(),
+          })
+        })
+        return accounts
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        return []
+      }
+    }
+  )
+  const defaultValues = {
+    name: name as string,
+    points_account: data.length > 0 ? data[0].id : "",
+    balance: data.length > 0 ? data[0].balance : "",
+  }
   return (
     <Layout>
       <div className="p-14">
         <div className="mb-10 text-center text-2xl font-medium">
           Adjust Points Balance
         </div>
-        <PointBalanceForm
-          defaultValues={{
-            name: name as string,
-            balance: parseInt(balance as string),
-          }}
-          accountData={data.userAccounts}
-        />
+        <PointBalanceForm defaultValues={defaultValues} accountData={data} uid={id as string} />
       </div>
     </Layout>
   )

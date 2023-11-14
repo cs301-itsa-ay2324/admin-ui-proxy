@@ -1,7 +1,11 @@
+import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CheckIcon, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
+import { useToast } from "@/components/use-toast"
 
 import { cn } from "../../utils/cn"
 import { Button } from "./button"
@@ -26,24 +30,68 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 const PointBalanceFormSchema = z.object({
   name: z.string().min(1),
   points_account: z.string().optional(),
-  balance: z.number().optional(),
+  balance: z.string().optional(),
 })
 export function PointBalanceForm({
   defaultValues,
   accountData,
+  uid,
 }: {
   defaultValues?: z.infer<typeof PointBalanceFormSchema>
-  accountData: string[]
+  accountData: AccountBalance[]
+  uid: string
 }) {
+  const { toast } = useToast()
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof PointBalanceFormSchema>>({
     resolver: zodResolver(PointBalanceFormSchema),
     defaultValues: { ...defaultValues },
   })
+  const [selectedAccountBalance, setSelectedAccountBalance] =
+    useState<string>("")
 
-  function onSubmit(values: z.infer<typeof PointBalanceFormSchema>) {
-    // Do something with the form values.
-    // This will be type-safe and validated.
-    console.log(values)
+  const onAccountSelect = (accountId: string) => {
+    const account = accountData.find((account) => account.id === accountId)
+    setSelectedAccountBalance(account?.balance.toString() || "No balance found")
+    form.setValue("points_account", accountId)
+  }
+
+  useEffect(() => {
+    form.setValue("balance", selectedAccountBalance)
+  }, [selectedAccountBalance, form])
+
+  async function onSubmit(values: z.infer<typeof PointBalanceFormSchema>) {
+    const id = values.points_account
+    const balance = Number(values.balance)
+    const response = await fetch(`/api/points/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+        user_id: uid,
+        balance: balance,
+      }),
+    })
+    if (response.status !== 200) {
+      toast({
+        variant: "destructive",
+        title: "Unsuccessful",
+        description: `Failed to update points balance for ${values.name}!`,
+        duration: 3000,
+      })
+    } else {
+      toast({
+        title: "Success",
+        description: `Points balance updated for ${values.name}!`,
+        duration: 3000,
+      })
+      setTimeout(() => {
+        router.push("/users")
+      }, 2000)
+    }
   }
   return (
     <Form {...form}>
@@ -83,8 +131,8 @@ export function PointBalanceForm({
                     >
                       {field.value
                         ? accountData.find(
-                            (account_id) => account_id === field.value
-                          )
+                            (account) => account.id === field.value
+                          )?.id || "Select Account"
                         : "Select Account"}
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -95,23 +143,13 @@ export function PointBalanceForm({
                     <CommandInput placeholder="Search account..." />
                     <CommandEmpty>No account found.</CommandEmpty>
                     <CommandGroup>
-                      {accountData?.map((account_id) => (
+                      {accountData?.map((account) => (
                         <CommandItem
-                          value={account_id}
-                          key={account_id}
-                          onSelect={() => {
-                            form.setValue("points_account", account_id)
-                          }}
+                          value={account.id}
+                          key={account.id}
+                          onSelect={() => onAccountSelect(account.id)}
                         >
-                          <CheckIcon
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              account_id === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {account_id}
+                          {account.id}
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -123,7 +161,6 @@ export function PointBalanceForm({
             </FormItem>
           )}
         />
-        {/* TODO: make this dynamically change based on selected points_account */}
         <FormField
           control={form.control}
           name="balance"
@@ -131,7 +168,7 @@ export function PointBalanceForm({
             <FormItem>
               <FormLabel>Balance</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} type="number" />
               </FormControl>
               <FormMessage />
             </FormItem>
