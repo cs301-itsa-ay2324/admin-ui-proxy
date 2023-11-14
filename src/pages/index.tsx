@@ -1,11 +1,11 @@
-import { use } from "chai"
-import { useSession } from "next-auth/react"
+import { useContext } from "react"
 
+import { PermissionContext } from "../../context/permissions"
 import { Layout } from "../components/layout"
 
 export default function Home() {
-  const { data: session } = useSession()
-  console.log(session)
+  const permissions = useContext(PermissionContext)
+  console.log(permissions)
   return (
     <Layout>
       <main

@@ -1,6 +1,8 @@
-import React from "react"
+import React, { useContext } from "react"
+import { useSession } from "next-auth/react"
 import { useQuery } from "react-query"
 
+import { PermissionContext } from "../../../../context/permissions"
 import { DataTable } from "../data-table"
 import { Columns } from "./columns"
 
@@ -10,7 +12,7 @@ const UserTable = () => {
 
 export default UserTable
 
-async function populateRole(){
+async function populateRole() {
   const response = await fetch("/api/users/roles")
   const data = await response.json()
   const roleData = data.roles.map((role: any) => {
@@ -23,15 +25,24 @@ async function populateRole(){
 }
 
 const UserData = () => {
-  const { isLoading, data } = useQuery("data", async () => {
-    let userData : any = []
+  const { data: session } = useSession()
+  const role = useContext(PermissionContext)
+  const userPermission = role?.permissions?.find(
+    (p) => p.database_name === "USER"
+  )
+  const { data } = useQuery("data", async () => {
+    let userData = []
+
     const response = await fetch("/api/users")
 
     if (response.ok) {
       const data = await response.json()
       const roleData = await populateRole()
       userData = data.users.map((user: any) => {
-        const role : String = user.role_id == null ? "-" : roleData.find((role: any) => role.id == user.role_id).name
+        const role: String =
+          user.role_id == null
+            ? "-"
+            : roleData.find((role: any) => role.id == user.role_id).name
         return {
           id: user.id,
           name: user.first_name + " " + user.last_name,
@@ -43,13 +54,22 @@ const UserData = () => {
     }
     return userData
   })
-  if (isLoading) {
-    return <div>User Table Loading...</div>
-  }
-
+  if (data) console.log(data)
   return (
     <div>
-      <DataTable columns={Columns} data={data} subject="name" />
+      {data && (
+        <DataTable
+          columns={Columns}
+          data={
+            !userPermission?.read_non_admin
+              ? data
+                  ?.filter((user: any) => user.role !== "-")
+                  .filter((user: any) => user.email !== session?.user?.email)
+              : data.filter((user: any) => user.email !== session?.user?.email)
+          }
+          subject="name"
+        />
+      )}
     </div>
   )
 }
