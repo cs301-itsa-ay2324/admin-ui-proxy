@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { CognitoIdentityServiceProvider } from "aws-sdk"
+import AWS from "aws-sdk"
+import { sendToSQS } from "@/sqs"
+
+const sqs = new AWS.SQS()
 
 export default async function handler(
   req: NextApiRequest,
@@ -37,27 +40,21 @@ export default async function handler(
           }),
         }
       )
-      // TODO: update cognito
-      // if (role !== undefined) {
-      //   const cognitoISP = new CognitoIdentityServiceProvider({
-      //     region: process.env.AWS_REGION,
-      //   })
-      //   const params = {
-      //     UserPoolId: process.env.COGNITO_USER_POOL_ID!,
-      //     Username: email, // Username is set to user email, assuming its immutable
-      //     UserAttributes: [
-      //       {
-      //         Name: "given_name",
-      //         Value: first_name,
-      //       },
-      //       {
-      //         Name: "family_name",
-      //         Value: last_name,
-      //       },
-      //     ],
-      //   }
-      // }
-
+      if (response.status===200){
+        const queuePayload = {
+          action: "UPDATE",
+          target: "USER",
+          triggeredBy: "ADMIN",
+          data: {
+            id,
+            email,
+            first_name,
+            last_name,
+            role,
+          },
+        }
+        sendToSQS(queuePayload, "POST")
+      }
       return res.status(200).json(response)
     } catch (error) {
       res.status(500).json({ message: error })
@@ -75,6 +72,17 @@ export default async function handler(
           },
         }
       )
+      if (response.status === 200) {
+        const queuePayload = {
+          action: "DELETE",
+          target: "USER",
+          triggeredBy: "ADMIN",
+          data: {
+            id,
+          },
+        }
+        sendToSQS(queuePayload, "POST")
+      }
       return res.status(200).json(response)
     } catch (error) {
       res.status(500).json({ message: error })

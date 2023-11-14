@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { CognitoIdentityServiceProvider } from "aws-sdk"
+import { sendToSQS } from "@/sqs"
 
 export default async function handler(
   req: NextApiRequest,
@@ -53,7 +54,21 @@ export default async function handler(
           }),
         }
       )
-
+      if (response.status === 201) {
+        const queuePayload = {
+          action: "CREATE",
+          target: "USER",
+          triggeredBy: "ADMIN",
+          data: {
+            email,
+            first_name,
+            last_name,
+            points_accounts,
+            role,
+          },
+        }
+        sendToSQS(queuePayload, "POST")
+      }
       // Create a new admin user in Cognito has role
       if (role !== undefined) {
         const cognitoResponse = await cognitoISP
