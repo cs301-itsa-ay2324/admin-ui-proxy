@@ -20,7 +20,7 @@ export default function Profile() {
   const loading = status === "loading"
 
   const handleSignIn = () =>
-    signIn("cognito", { callbackUrl: "http://localhost:3000/" })
+    signIn("cognito", { callbackUrl: process.env.NEXTAUTH_URL })
 
   const companyName = "Ascenda Loyalty"
 

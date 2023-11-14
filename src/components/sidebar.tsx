@@ -40,7 +40,6 @@ const sidebarLinksOwner: SidebarNavItem[] = [
 ]
 
 const Sidebar = () => {
-  const { data: session } = useSession()
   const role = useContext(PermissionContext)
   const roleName = role?.name
   const [open, setOpen] = useState(true)

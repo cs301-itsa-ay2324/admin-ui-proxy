@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronDown } from "lucide-react"
@@ -7,6 +8,7 @@ import { z } from "zod"
 
 import { useToast } from "@/components/use-toast"
 
+import { PermissionContext } from "../../context/permissions"
 import { cn } from "../../utils/cn"
 import { Button } from "./button"
 import {
@@ -43,6 +45,11 @@ export function PointBalanceForm({
 }) {
   const { toast } = useToast()
   const router = useRouter()
+  const role = useContext(PermissionContext)
+  const pointsPermission = role?.permissions?.find(
+    (p) => p.database_name === "POINTS"
+  )
+  const canUpdatePoints = pointsPermission?.update
 
   const form = useForm<z.infer<typeof PointBalanceFormSchema>>({
     resolver: zodResolver(PointBalanceFormSchema),
@@ -174,9 +181,15 @@ export function PointBalanceForm({
             </FormItem>
           )}
         />
-        <div className="flex w-full justify-end">
-          <Button type="submit">Submit</Button>
-        </div>
+        {canUpdatePoints ? (
+          <div className="flex w-full justify-end">
+            <Button type="submit">Submit</Button>
+          </div>
+        ) : (
+          <Link href="/users" className="flex w-full justify-end">
+            <Button type="button">Back</Button>
+          </Link>
+        )}
       </form>
     </Form>
   )
