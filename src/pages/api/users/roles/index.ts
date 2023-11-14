@@ -14,6 +14,7 @@ export default async function handler(
       const data = await response.json()
       return res.status(response.status).json(data)
     } catch (error) {
+      console.error(`/api/users/roles`, error)
       res.status(500).json({ message: error })
     }
   } else if (req.method === "POST") {
@@ -32,7 +33,7 @@ export default async function handler(
           }),
         }
       )
-      if(response.status===201){
+      if (response.status === 201) {
         const queuePayload = {
           action: "CREATE",
           target: "ROLE",
@@ -47,6 +48,7 @@ export default async function handler(
       const data = await response.json()
       return res.status(200).json(data)
     } catch (error) {
+      console.error(`/api/users/roles`, error)
       res.status(500).json({ message: error })
     }
   }

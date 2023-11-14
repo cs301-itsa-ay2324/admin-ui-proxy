@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react"
 
 const Navbar = () => {
   const handleLogout = () => {
-    signOut({ callbackUrl: "http://localhost:3000/login" })
+    signOut({ callbackUrl: "/login" })
   }
 
   return (

@@ -3,15 +3,19 @@ import { getToken } from "next-auth/jwt"
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  console.log("middleware", pathname)
+  const token = await getToken({ req })
+  console.log(`middleware:[${pathname}]:${token?.email}`)
 
-  // Allow if it's a request for the login page or next-auth session & provider fetching
-  if (pathname.includes("/login") || pathname.includes("/api/auth")) {
-    return NextResponse.next()
+  if (pathname.startsWith("/login")) {
+    if (token) {
+      const url = req.nextUrl.clone()
+      url.pathname = "/"
+      return NextResponse.redirect(url)
+    } else {
+      return NextResponse.next()
+    }
   }
 
-  // If the token exists, allow the request
-  const token = await getToken({ req })
   if (token) {
     return NextResponse.next()
   }
@@ -22,4 +26,6 @@ export async function middleware(req: NextRequest) {
   return NextResponse.redirect(url)
 }
 
-export const config = { matcher: "/((?!.*\\.).*)" }
+export const config = {
+  matcher: "/((?!api|_next/static|_next/image|favicon.ico|auth/*).*)",
+}

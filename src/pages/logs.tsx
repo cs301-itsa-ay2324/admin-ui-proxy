@@ -1,5 +1,4 @@
 import React, { useContext } from "react"
-import { has } from "cypress/types/lodash"
 
 import { Layout } from "@/components/layout"
 import LogTable from "@/components/table/log/log-table"

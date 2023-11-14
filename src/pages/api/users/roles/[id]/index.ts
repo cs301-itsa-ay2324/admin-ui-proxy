@@ -37,6 +37,8 @@ export default async function handler(
       const data = await response.json()
       return res.status(200).json(data)
     } catch (error) {
+      const { id } = req.query
+      console.error(`/api/users/roles/${id}`, error)
       res.status(500).json({ message: error })
     }
     // Delete specific user
@@ -65,6 +67,8 @@ export default async function handler(
       }
       return res.status(200).json(response)
     } catch (error) {
+      const { id } = req.query
+      console.error(`/api/users/roles/${id}`, error)
       res.status(500).json({ message: error })
     }
   }

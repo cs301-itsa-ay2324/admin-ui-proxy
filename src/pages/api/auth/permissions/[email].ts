@@ -25,6 +25,8 @@ export default async function handler(
       // return [{}] of permissions
       res.status(200).json(role)
     } catch (error) {
+      const { email } = req.query
+      console.error(`/api/permissions/${email}`, error)
       res.status(500).json({ message: error })
     }
   }

@@ -24,6 +24,7 @@ export default async function handler(
         .promise()
       res.status(200).json(JSON.parse(lambdaResponse.Payload as string))
     } catch (error) {
+      console.error("/api/logs", error)
       res.status(500).json({ error: "Internal Server Error" })
     }
   }

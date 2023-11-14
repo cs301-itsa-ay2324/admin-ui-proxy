@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { CognitoIdentityServiceProvider } from "aws-sdk"
 import { sendToSQS } from "@/sqs"
+import { CognitoIdentityServiceProvider } from "aws-sdk"
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,6 +13,7 @@ export default async function handler(
       const data = await response.json()
       return res.status(response.status).json(data)
     } catch (error) {
+      console.error(`/api/users`, error)
       res.status(500).json({ message: error })
     }
     // Create a new user
@@ -83,6 +84,7 @@ export default async function handler(
 
       return res.status(200).json(response)
     } catch (error) {
+      console.error(`/api/users`, error)
       res.status(500).json({ message: error })
     }
   }

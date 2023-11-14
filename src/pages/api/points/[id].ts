@@ -40,6 +40,8 @@ export default async function handler(
       const data = await response.json()
       return res.status(200).json(data)
     } catch (error) {
+      const { id } = req.query
+      console.error(`/api/points/${id}`, error)
       res.status(500).json({ message: error })
     }
   }

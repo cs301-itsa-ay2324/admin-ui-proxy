@@ -6,17 +6,27 @@ export default NextAuth({
     CognitoProvider({
       clientId: process.env.COGNITO_CLIENT_ID!,
       clientSecret: process.env.COGNITO_CLIENT_SECRET!,
-      issuer: process.env.COGNITO_ISSUER
-    })
+      issuer: process.env.COGNITO_ISSUER,
+    }),
   ],
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) return url
-      else if (url.startsWith("/")) return new URL(url, baseUrl).toString()
+      const allowedUrls = [
+        "/",
+        "/login",
+        "/logout",
+        "/error",
+        "/api/auth/signin",
+        "/api/auth/signout",
+        "/api/auth/session",
+      ]
+      if (allowedUrls.some((u) => url.startsWith(u))) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
       return baseUrl
-    }
-  }
+    },
+  },
 })
