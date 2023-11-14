@@ -1,8 +1,5 @@
-
-import React, { useContext, useEffect } from "react"
-import UserRole from "@/../types/enums"
+import React, { useContext } from "react"
 import { useSession } from "next-auth/react"
-
 import { useQuery } from "react-query"
 
 import { PermissionContext } from "../../../../context/permissions"
@@ -15,7 +12,7 @@ const UserTable = () => {
 
 export default UserTable
 
-async function populateRole(){
+async function populateRole() {
   const response = await fetch("/api/users/roles")
   const data = await response.json()
   const roleData = data.roles.map((role: any) => {
@@ -40,7 +37,10 @@ const UserData = () => {
       const data = await response.json()
       const roleData = await populateRole()
       userData = data.users.map((user: any) => {
-        const role : String = user.role_id == null ? "-" : roleData.find((role: any) => role.id == user.role_id).name
+        const role: String =
+          user.role_id == null
+            ? "-"
+            : roleData.find((role: any) => role.id == user.role_id).name
         return {
           id: user.id,
           name: user.first_name + " " + user.last_name,
