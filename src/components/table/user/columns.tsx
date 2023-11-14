@@ -40,10 +40,6 @@ export const Columns: ColumnDef<Users>[] = [
     header: "Email",
   },
   {
-    accessorKey: "points_balance",
-    header: "Points Balance",
-  },
-  {
     accessorKey: "role",
     header: "Role",
   },

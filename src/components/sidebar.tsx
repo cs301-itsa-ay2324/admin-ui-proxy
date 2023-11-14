@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { GanttChart, PanelLeftOpen, User2 } from "lucide-react"
+import { GanttChart, PanelLeftOpen, User2, KeyRound } from "lucide-react"
 
 import { cn } from "../../utils/cn"
 import { HamburgerButton } from "./hamburger-button"
@@ -17,6 +17,11 @@ const sidebarLinks: SidebarNavItem[] = [
     href: "/logs",
     icon: <GanttChart />,
   },
+  {
+    title: "Access Control",
+    href: "/access-control",
+    icon: <KeyRound />,
+  }
 ]
 
 const Sidebar = () => {
