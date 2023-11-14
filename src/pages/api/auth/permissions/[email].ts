@@ -23,7 +23,7 @@ export default async function handler(
       const role = await roles.roles.find((role: any) => role.id === role_id)
 
       // return [{}] of permissions
-      res.status(200).json(role.permissions)
+      res.status(200).json(role)
     } catch (error) {
       res.status(500).json({ message: error })
     }

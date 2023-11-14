@@ -8,10 +8,10 @@ import UserTable from "@/components/table/user/user-table"
 import { PermissionContext } from "../../../context/permissions"
 
 const Users = () => {
-  const permissions = useContext(PermissionContext)
-  console.log(permissions)
-  const userPermission = permissions?.find((p) => p.database_name === "USER")
-  console.log(userPermission)
+  const role = useContext(PermissionContext)
+  const userPermission = role?.permissions?.find(
+    (p) => p.database_name === "USER"
+  )
   return (
     <Layout>
       <div className="p-14">

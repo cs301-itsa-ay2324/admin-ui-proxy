@@ -26,8 +26,10 @@ async function populateRole() {
 
 const UserData = () => {
   const { data: session } = useSession()
-  const permissions = useContext(PermissionContext)
-  const userPermission = permissions?.find((p) => p.database_name === "USER")
+  const role = useContext(PermissionContext)
+  const userPermission = role?.permissions?.find(
+    (p) => p.database_name === "USER"
+  )
   const { data } = useQuery("data", async () => {
     let userData = []
 

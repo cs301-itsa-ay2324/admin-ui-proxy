@@ -56,8 +56,8 @@ export const Columns: ColumnDef<Users>[] = [
     cell: ({ row }) => {
       const user = row.original
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const permissions = useContext(PermissionContext)
-      const userPermission = permissions?.find(
+      const role = useContext(PermissionContext)
+      const userPermission = role?.permissions?.find(
         (p) => p.database_name === "USER"
       )
       return (
