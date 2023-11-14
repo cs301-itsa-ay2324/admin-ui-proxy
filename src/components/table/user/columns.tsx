@@ -64,6 +64,7 @@ export const Columns: ColumnDef<Users>[] = [
         (p) => p.database_name === "POINTS"
       )
       const canUpdatePoints = pointsPermission?.update
+
       return (
         <div className="flex gap-4">
           {userPermission?.update && (
@@ -91,6 +92,7 @@ export const Columns: ColumnDef<Users>[] = [
             }}
             as={`/users/${user.id}/points`}
           >
+
             {canUpdatePoints ? (
               <>
                 <PenSquare className="h-5 w-5 cursor-pointer" />
@@ -99,6 +101,7 @@ export const Columns: ColumnDef<Users>[] = [
             ) : (
               "View Points"
             )}
+
           </Link>
           {userPermission?.delete && (
             <DeleteUserDialog
