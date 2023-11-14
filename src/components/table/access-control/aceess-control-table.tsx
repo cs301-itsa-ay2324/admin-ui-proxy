@@ -16,9 +16,11 @@ const AccessControlData = () => {
 
     function formatPermissionName(permissionType: string): string {
       return permissionType
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
+        .split("_")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ")
     }
 
     function getServicePermissions(
@@ -31,17 +33,26 @@ const AccessControlData = () => {
       )
       if (relevantPermissions) {
         Object.entries(relevantPermissions).forEach(([key, value]) => {
-          if (value === true && ["read_all", "read_non_admin", "create", "update", "delete"].includes(key)) {
-            servicePermissions.push(formatPermissionName(key));
+          if (
+            value === true &&
+            [
+              "read_all",
+              "read_non_admin",
+              "create",
+              "update",
+              "delete",
+            ].includes(key)
+          ) {
+            servicePermissions.push(formatPermissionName(key))
           }
-        });
+        })
       }
       return servicePermissions
     }
 
     if (response.ok) {
       const data = await response.json()
-      const roleData: RolesPermissions[] = data.roles.map((role : Roles) => {
+      const roleData: RolesPermissions[] = data.roles.map((role: Roles) => {
         return {
           id: role.id,
           name: role.name.toLowerCase(),
@@ -69,7 +80,7 @@ const AccessControlData = () => {
 
   return (
     <div>
-      <DataTable columns={Columns} data={data || []} subject="id"/>
+      <DataTable columns={Columns} data={data || []} subject="name" />
     </div>
   )
 }

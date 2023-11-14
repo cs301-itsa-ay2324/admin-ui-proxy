@@ -62,7 +62,7 @@ export function RolesForm({
       delete: false,
     }
     servicePermissions.forEach((permission) => {
-      const key = permission.replace(/-/g, "_").toLowerCase().replace(" ", "_")
+      const key = permission.toLowerCase().replaceAll(" ", "_")
       if (key in permissionsMap) {
         permissionsMap[key] = true
       }
