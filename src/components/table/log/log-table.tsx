@@ -15,7 +15,11 @@ const LogData = () => {
     const response = await fetch("/api/logs")
     if (response.ok) {
       const data = await response.json()
-      console.log(data)
+      data.forEach((log: any) => {
+        if (log.data) {
+          log.data = JSON.parse(log.data)
+        }
+      })
       return data
     }
     return []
