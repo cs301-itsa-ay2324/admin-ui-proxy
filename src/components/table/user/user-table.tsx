@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react"
 import UserRole from "@/../types/enums"
+import { useSession } from "next-auth/react"
 import { useQuery } from "react-query"
 
 import { PermissionContext } from "../../../../context/permissions"
@@ -13,10 +14,10 @@ const UserTable = () => {
 export default UserTable
 
 const UserData = () => {
-  const [users, setUsers] = React.useState([])
+  const { data: session } = useSession()
   const permissions = useContext(PermissionContext)
   const userPermission = permissions?.find((p) => p.database_name === "USER")
-  const { isLoading, data } = useQuery("data", async () => {
+  const { data } = useQuery("data", async () => {
     let userData = []
     const response = await fetch("/api/users")
 
@@ -35,7 +36,7 @@ const UserData = () => {
     }
     return userData
   })
-
+  if (data) console.log(data)
   return (
     <div>
       {data && (
@@ -43,8 +44,10 @@ const UserData = () => {
           columns={Columns}
           data={
             !userPermission?.read_non_admin
-              ? data?.filter((user: any) => user.role !== "-")
-              : data
+              ? data
+                  ?.filter((user: any) => user.role !== "-")
+                  .filter((user: any) => user.email !== session?.user?.email)
+              : data.filter((user: any) => user.email !== session?.user?.email)
           }
           subject="name"
         />
