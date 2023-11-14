@@ -1,5 +1,4 @@
 import { TrashIcon } from "lucide-react"
-import { toast } from "./use-toast"
 
 import {
   AlertDialog,
@@ -13,18 +12,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/alert-dialog"
 
+import { toast } from "./use-toast"
+
 export function DeleteUserDialog(prop: {
   id: string
   email?: string
   role?: string
   action?: string
 }) {
-  
   async function deleteUser() {
     console.log(prop)
     // deleting user from db
     const id = prop.id
-    const url = prop.action === "role" ? `/api/users/roles/${id}` : `/api/users/${id}`
+    const url =
+      prop.action === "role" ? `/api/users/roles/${id}` : `/api/users/${id}`
     const dbResponse = await fetch(url, {
       method: "DELETE",
     })
@@ -71,7 +72,7 @@ export function DeleteUserDialog(prop: {
           <AlertDialogDescription>
             Are you sure you want to delete ID:{" "}
             <span className="text-blue-500">{prop.id}</span>?{" "}
-            <div className="pt-2">This action cannot be undone.</div>
+            <span className="pt-2">This action cannot be undone.</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
